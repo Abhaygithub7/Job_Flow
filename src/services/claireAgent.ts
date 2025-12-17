@@ -16,7 +16,7 @@ export async function chatWithClaire(
     if (!apiKey) throw new Error('API Key required');
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-preview-02-05" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
 
     // Job Stats Calculation
     const totalApplied = jobs.length;
