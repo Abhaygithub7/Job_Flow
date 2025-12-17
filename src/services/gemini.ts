@@ -6,7 +6,7 @@ let model: any = null;
 const getModel = (apiKey: string) => {
     if (!genAI || !model) {
         genAI = new GoogleGenerativeAI(apiKey);
-        model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        model = genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
     }
     return model;
 };
