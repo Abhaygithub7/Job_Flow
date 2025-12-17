@@ -3,7 +3,7 @@ import { User, GraduationCap, Briefcase, Code, Sparkles, Download, Eye, Loader2 
 import { useResume } from '../context/ResumeContext';
 import { useJobs } from '../context/JobContext';
 import { analyzeResume, generateHeadshot } from '../services/resumeGenerators';
-import type { Section, Project } from '../types/types';
+
 
 type Tab = 'personal' | 'experience' | 'education' | 'projects';
 
