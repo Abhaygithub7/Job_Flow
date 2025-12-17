@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Resume } from '../types/types';
 
 // Helper to convert file to base64
@@ -23,7 +23,8 @@ const fileToGenerativePart = async (file: File): Promise<{ inlineData: { data: s
 export async function analyzeResume(file: File, apiKey: string): Promise<Partial<Resume>> {
     if (!apiKey) throw new Error('API Key required');
 
-    const client = new GoogleGenAI({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const imagePart = await fileToGenerativePart(file);
 
     const prompt = `
@@ -46,15 +47,10 @@ export async function analyzeResume(file: File, apiKey: string): Promise<Partial
     Only return the JSON object, no markdown formatting.
   `;
 
-    // Using gemini-1.5-flash for vision capabilities (stable)
-    const response = await client.models.generateContent({
-        model: 'gemini-1.5-flash',
-        contents: [
-            { role: 'user', parts: [{ text: prompt }, imagePart] }
-        ]
-    });
+    const result = await model.generateContent([prompt, imagePart]);
+    const response = await result.response;
+    const text = response.text();
 
-    const text = response.text || '';
     // Clean up markdown code blocks if present
     const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
 

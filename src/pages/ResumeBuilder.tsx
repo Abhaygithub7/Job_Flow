@@ -3,6 +3,8 @@ import { User, GraduationCap, Briefcase, Code, Sparkles, Download, Eye, Loader2 
 import { useResume } from '../context/ResumeContext';
 import { useJobs } from '../context/JobContext';
 import { analyzeResume, generateHeadshot } from '../services/resumeGenerators';
+// @ts-ignore
+import html2pdf from 'html2pdf.js';
 
 
 type Tab = 'personal' | 'experience' | 'education' | 'projects';
@@ -16,6 +18,22 @@ export function ResumeBuilder() {
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const avatarInputRef = useRef<HTMLInputElement>(null);
+    const resumeRef = useRef<HTMLDivElement>(null);
+
+    const handleExportPDF = () => {
+        const element = resumeRef.current;
+        if (!element) return;
+
+        const opt = {
+            margin: 0,
+            filename: `${resume.fullName || 'resume'}.pdf`,
+            image: { type: 'jpeg' as const, quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' as const }
+        };
+
+        html2pdf().set(opt).from(element).save();
+    };
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -362,7 +380,10 @@ export function ResumeBuilder() {
                             onChange={handleFileUpload}
                         />
                     </div>
-                    <button className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700">
+                    <button
+                        onClick={handleExportPDF}
+                        className="flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-slate-700"
+                    >
                         <Download className="w-4 h-4" /> Export PDF
                     </button>
                 </div>
@@ -415,7 +436,7 @@ export function ResumeBuilder() {
                 </div>
                 <div className="flex-1 overflow-y-auto p-8 flex justify-center bg-slate-100">
                     {/* A4 Paper */}
-                    <div className="w-[210mm] min-h-[297mm] bg-white shadow-lg p-[20mm] text-slate-800 text-sm">
+                    <div ref={resumeRef} className="w-[210mm] min-h-[297mm] bg-white shadow-lg p-[20mm] text-slate-800 text-sm">
                         {/* Header */}
                         <div className="flex items-start gap-6 border-b border-slate-200 pb-6 mb-6">
                             {resume.avatar && (

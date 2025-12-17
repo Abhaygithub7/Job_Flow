@@ -1,4 +1,4 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { Job, Resume } from '../types/types';
 
 interface Message {
@@ -15,7 +15,8 @@ export async function chatWithClaire(
 ): Promise<string> {
     if (!apiKey) throw new Error('API Key required');
 
-    const client = new GoogleGenAI({ apiKey });
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-lite-preview-02-05" });
 
     // Job Stats Calculation
     const totalApplied = jobs.length;
@@ -63,18 +64,20 @@ export async function chatWithClaire(
     Respond as Claire. Keep it concise, natural, and encouraging.
   `;
 
-    // Construct conversation history for the new SDK
-    // The new SDK format for multiple turns usually expects 'contents' array with 'role' and 'parts'
-    const contents = [
-        { role: 'user', parts: [{ text: systemInstruction }] }, // System prompt as first user message for simplicity or use config if available
-        ...history.map(m => ({ role: m.role, parts: [{ text: m.content }] })),
-        { role: 'user', parts: [{ text: message }] }
-    ];
-
-    const response = await client.models.generateContent({
-        model: 'gemini-2.5-flash-lite',
-        contents: contents,
+    const chat = model.startChat({
+        history: [
+            {
+                role: "user",
+                parts: [{ text: systemInstruction }],
+            },
+            ...history.map(m => ({
+                role: m.role,
+                parts: [{ text: m.content }],
+            }))
+        ],
     });
 
-    return response.text || "I'm having trouble thinking of a response right now.";
+    const result = await chat.sendMessage(message);
+    const response = await result.response;
+    return response.text();
 }

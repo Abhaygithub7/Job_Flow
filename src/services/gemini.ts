@@ -1,12 +1,14 @@
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-let genAI: GoogleGenAI | null = null;
+let genAI: GoogleGenerativeAI | null = null;
+let model: any = null;
 
-const getGenAI = (apiKey: string): GoogleGenAI => {
-    if (!genAI || apiKey) {
-        genAI = new GoogleGenAI({ apiKey });
+const getModel = (apiKey: string) => {
+    if (!genAI || !model) {
+        genAI = new GoogleGenerativeAI(apiKey);
+        model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     }
-    return genAI;
+    return model;
 };
 
 export async function generateCoverLetter(
@@ -19,7 +21,7 @@ export async function generateCoverLetter(
         throw new Error('Gemini API key is required. Please add it in Settings.');
     }
 
-    const ai = getGenAI(apiKey);
+    const aiModel = getModel(apiKey);
 
     const prompt = `Write a passionate and professional cover letter for the position of ${role} at ${company}. 
   
@@ -35,12 +37,9 @@ Guidelines:
 
 Write only the cover letter body, no subject line or addresses.`;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
-        contents: prompt,
-    });
-
-    return response.text || 'Failed to generate cover letter. Please try again.';
+    const result = await aiModel.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
 }
 
 export async function generateInterviewGuide(
@@ -53,7 +52,7 @@ export async function generateInterviewGuide(
         throw new Error('Gemini API key is required. Please add it in Settings.');
     }
 
-    const ai = getGenAI(apiKey);
+    const aiModel = getModel(apiKey);
 
     const prompt = `Create a comprehensive interview preparation guide for the position of ${role} at ${company}.
 
@@ -70,10 +69,7 @@ Please include:
 
 Format with clear headings and bullet points. Keep it actionable and specific to this role.`;
 
-    const response = await ai.models.generateContent({
-        model: 'gemini-1.5-flash',
-        contents: prompt,
-    });
-
-    return response.text || 'Failed to generate interview guide. Please try again.';
+    const result = await aiModel.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
 }
