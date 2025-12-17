@@ -24,7 +24,7 @@ export async function analyzeResume(file: File, apiKey: string): Promise<Partial
     if (!apiKey) throw new Error('API Key required');
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-001" });
     const imagePart = await fileToGenerativePart(file);
 
     const prompt = `
