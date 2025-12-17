@@ -436,7 +436,21 @@ export function ResumeBuilder() {
                 </div>
                 <div className="flex-1 overflow-y-auto p-8 flex justify-center bg-slate-100">
                     {/* A4 Paper */}
-                    <div ref={resumeRef} className="w-[210mm] min-h-[297mm] bg-white shadow-lg p-[20mm] text-slate-800 text-sm">
+                    <div
+                        ref={resumeRef}
+                        className="w-[210mm] min-h-[297mm] bg-white shadow-lg p-[20mm] text-slate-800 text-sm"
+                        style={{
+                            // @ts-ignore - Tailwind 4 compatibility overrides for html2canvas
+                            '--color-emerald-600': '#059669',
+                            '--color-slate-900': '#0f172a',
+                            '--color-slate-800': '#1e293b',
+                            '--color-slate-600': '#475569',
+                            '--color-slate-500': '#64748b',
+                            '--color-slate-200': '#e2e8f0',
+                            '--color-slate-100': '#f1f5f9',
+                            '--color-slate-50': '#f8fafc',
+                        }}
+                    >
                         {/* Header */}
                         <div className="flex items-start gap-6 border-b border-slate-200 pb-6 mb-6">
                             {resume.avatar && (
